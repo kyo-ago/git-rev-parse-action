@@ -1,0 +1,44 @@
+name: 'git-rev-parse-action'
+description: 'git rev-parse action'
+author: 'kyo-ago'
+
+inputs:
+  target:
+    description: ''
+    required: true
+  file:
+    description: ''
+    required: false
+    default: ''
+
+outputs:
+  hash:
+    description: ''
+    value: ${{ steps.run.outputs.hash }}
+  file:
+    description: ''
+    value: ${{ steps.run.outputs.file }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: run
+      run: |
+        FILE="${{ inputs.file }}"
+        HASH=`
+          echo "${{ inputs.target }}" | while read -r line; do
+            if [ "$line" != "" ]; then
+              git rev-parse HEAD:$line
+            fi
+          done | tr '\r\n' ' ' | tr '\n' ' '
+        `
+
+        if [ "$FILE" = "" ]; then
+          FILE="${RANDOM}.hash"
+        fi
+
+        echo "$HASH" > $FILE
+
+        echo "::set-output name=hash::$HASH"
+        echo "::set-output name=file::$FILE"
+      shell: bash
