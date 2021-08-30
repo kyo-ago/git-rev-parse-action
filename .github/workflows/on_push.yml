@@ -7,11 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - uses: ./
         id: action
         with:
           target: action.yml
       - run: echo "${{ steps.action.outputs.cache-hit }}"
+
       - uses: ./
         id: multi
         with:
