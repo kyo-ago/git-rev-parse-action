@@ -6,39 +6,29 @@ inputs:
   target:
     description: ''
     required: true
-  file:
-    description: ''
-    required: false
-    default: ''
 
 outputs:
-  hash:
+  cache-hit:
     description: ''
-    value: ${{ steps.run.outputs.hash }}
-  file:
-    description: ''
-    value: ${{ steps.run.outputs.file }}
+    value: ${{ steps.cache.outputs.cache-hit }}
 
 runs:
   using: 'composite'
   steps:
     - id: run
       run: |
-        FILE="${{ inputs.file }}"
-        HASH=`
+        FILE="${RANDOM}.hash"
+        echo `
           echo "${{ inputs.target }}" | while read -r line; do
             if [ "$line" != "" ]; then
               git rev-parse HEAD:$line
             fi
           done | tr '\r\n' ' ' | tr '\n' ' '
-        `
-
-        if [ "$FILE" = "" ]; then
-          FILE="${RANDOM}.hash"
-        fi
-
-        echo "$HASH" > $FILE
-
-        echo "::set-output name=hash::$HASH"
+        ` > $FILE
         echo "::set-output name=file::$FILE"
       shell: bash
+    - id: cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.run.outputs.file }}
+        key: ${{ hashFiles(steps.run.outputs.file) }}

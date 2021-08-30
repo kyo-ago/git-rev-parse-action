@@ -11,44 +11,11 @@ jobs:
         id: action
         with:
           target: action.yml
-          file: test.hash
-      - run: echo "${{ steps.action.outputs.hash }}"
-      - run: echo "${{ steps.action.outputs.file }}"
-      - run: cat ${{ steps.action.outputs.file }}
-      - run: |
-          if [ "${{ steps.action.outputs.hash }}" != "`cat ${{ steps.action.outputs.file }}`" ]; then
-            exit 1
-          fi
-      - run: |
-          if [ "${{ hashFiles(steps.action.outputs.file) }}" = "" ]; then
-            exit 1
-          fi
+      - run: echo "${{ steps.action.outputs.cache-hit }}"
       - uses: ./
         id: multi
         with:
           target: |
             action.yml
             README.md
-      - run: echo "${{ steps.multi.outputs.hash }}"
-      - run: echo "${{ steps.multi.outputs.file }}"
-      - run: cat ${{ steps.multi.outputs.file }}
-      - run: |
-          if [ "${{ steps.multi.outputs.hash }}" != "`cat ${{ steps.multi.outputs.file }}`" ]; then
-            exit 1
-          fi
-      - uses: ./
-        id: file
-        with:
-          target: action.yml
-          file: test.hash
-      - run: echo "${{ steps.file.outputs.hash }}"
-      - run: echo "${{ steps.file.outputs.file }}"
-      - run: cat test.hash
-      - run: |
-          if [ "${{ steps.file.outputs.file }}" != "test.hash" ]; then
-            exit 1
-          fi
-      - run: |
-          if [ "${{ steps.file.outputs.file }}" != "test.hash" ]; then
-            exit 1
-          fi
+      - run: echo "${{ steps.multi.outputs.cache-hit }}"
