@@ -1,6 +1,6 @@
 name: test
 
-on: [push]
+on: push
 
 jobs:
   test:
@@ -8,16 +8,28 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: ./
-        id: action
-        with:
-          target: action.yml
-      - run: echo "${{ steps.action.outputs.cache-hit }}"
+      - id: random
+        run: echo "::set-output name=file::${RANDOM}.hash"
+      - run: echo "${RANDOM}" > ${{ steps.random.outputs.file }}
 
       - uses: ./
-        id: multi
+        id: not-caching
         with:
-          target: |
-            action.yml
-            README.md
-      - run: echo "${{ steps.multi.outputs.cache-hit }}"
+          target: ${{ steps.random.outputs.file }}
+
+      - run: echo "hoge" > test.txt
+      - uses: ./
+        id: caching
+        with:
+          target: test.txt
+
+#      This is not an automated test as the cache save will fail if the CI fails.
+      - id: test
+        run: |
+          if [ "${{ steps.not-caching.outputs.cache-hit }}" != "true" -a "${{ steps.caching.outputs.cache-hit }}" = "true" ]; then
+            echo "::set-output name=result::OK"
+            exit;
+          fi
+          echo "::set-output name=result::NG"
+
+      - run: echo "${{ steps.test.outputs.result }}"

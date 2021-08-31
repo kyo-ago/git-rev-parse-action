@@ -4,31 +4,32 @@ author: 'kyo-ago'
 
 inputs:
   target:
-    description: ''
+    description: 'cache target entries'
     required: true
+  file:
+    description: 'temporary hash file'
+    required: false
+    default: 'git-rev-parse-action.hash'
 
 outputs:
   cache-hit:
-    description: ''
+    description: '"true" or ""'
     value: ${{ steps.cache.outputs.cache-hit }}
 
 runs:
   using: 'composite'
   steps:
-    - id: run
-      run: |
-        FILE="${RANDOM}.hash"
+    - run: |
         echo `
           echo "${{ inputs.target }}" | while read -r line; do
             if [ "$line" != "" ]; then
               git rev-parse HEAD:$line
             fi
           done | tr '\r\n' ' ' | tr '\n' ' '
-        ` > $FILE
-        echo "::set-output name=file::$FILE"
+        ` > ${{ inputs.file }}
       shell: bash
     - id: cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.run.outputs.file }}
-        key: ${{ hashFiles(steps.run.outputs.file) }}
+        path: ${{ inputs.file }}
+        key: ${{ hashFiles(inputs.file) }}
