@@ -26,7 +26,7 @@ jobs:
 #      This is not an automated test as the cache save will fail if the CI fails.
       - id: test
         run: |
-          if [ "${{ steps.not-caching.outputs.cache-hit }}" != "true" -a "${{ steps.caching.outputs.cache-hit }}" = "true" ]; then
+          if [ "${{ steps.not-caching.outputs.cache-hit }}" != "true" && "${{ steps.caching.outputs.cache-hit }}" = "true" ]; then
             echo "::set-output name=result::OK"
             exit;
           fi
