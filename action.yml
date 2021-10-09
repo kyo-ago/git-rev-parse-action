@@ -28,6 +28,11 @@ runs:
           done | tr '\r\n' ' ' | tr '\n' ' '
         ` > ${{ inputs.file }}
       shell: bash
+    - name: Check workflow files
+      run: |
+        bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        ./actionlint -color
+      shell: bash
     - id: cache
       uses: actions/cache@v2
       with:
