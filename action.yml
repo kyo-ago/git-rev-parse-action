@@ -39,6 +39,6 @@ runs:
 
         echo "$HASH" > $FILE
 
-        echo "::set-output name=hash::$HASH"
-        echo "::set-output name=file::$FILE"
+        echo "hash=$HASH" >> $GITHUB_OUTPUT
+        echo "file=$FILE" >> $GITHUB_OUTPUT
       shell: bash
