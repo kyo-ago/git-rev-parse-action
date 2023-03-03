@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - id: random
-        run: echo "::set-output name=file::${RANDOM}.hash"
+        run: echo "file=${RANDOM}.hash" >> $GITHUB_OUTPUT
       - run: echo "${RANDOM}" > ${{ steps.random.outputs.file }}
 
       - uses: ./
@@ -27,9 +27,9 @@ jobs:
       - id: test
         run: |
           if [ "${{ steps.not-caching.outputs.cache-hit }}" != "true" -a "${{ steps.caching.outputs.cache-hit }}" = "true" ]; then
-            echo "::set-output name=result::OK"
+            echo "result=OK" >> $GITHUB_OUTPUT
             exit;
           fi
-          echo "::set-output name=result::NG"
+          echo "result=NG" >> $GITHUB_OUTPUT
 
       - run: echo "${{ steps.test.outputs.result }}"
