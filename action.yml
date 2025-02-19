@@ -29,7 +29,7 @@ runs:
         ` > ${{ inputs.file }}
       shell: bash
     - id: cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ${{ inputs.file }}
         key: ${{ hashFiles(inputs.file) }}
